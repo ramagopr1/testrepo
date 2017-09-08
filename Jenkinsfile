@@ -1,5 +1,4 @@
 #!groovy
-@Library('savvi-jenkins-pipeline-libraries@test_branch') _
 
 pipeline {
     parameters {
