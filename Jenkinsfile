@@ -3,6 +3,17 @@
 pipeline {
     parameters {
         string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'What branch to build?')
+
+         activeChoiceParam('States') {
+        description('Name of the State')
+        filterable()
+        choiceType('SINGLE_SELECT')
+        groovyScript {
+          script('return ["Sao Paulo", "Rio de Janeiro"]')
+          fallbackScript('"Error in script"')
+        }
+      }
+
     }
 
 
