@@ -9,10 +9,6 @@ pipeline {
         label 'master'
     }
 
-    triggers {
-        github(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All')
-    }
-
     options {
         timeout(time: 20, unit: 'MINUTES')
     }
@@ -30,7 +26,7 @@ pipeline {
         stage('Initialise') {
             steps {
                 deleteDir()
-                updateGitlabCommitStatus name: 'build', state: 'pending'
+                //updateGitlabCommitStatus name: 'build', state: 'pending'
 
                 // Code that doesn't have a step plugin equivalent
                 script {
@@ -41,7 +37,7 @@ pipeline {
                     // Populate the final choice to environment so our scripts can use it
                     env.GIT_BRANCH = GIT_BRANCH
 
-                    artifactoryServer = Artifactory.server('apro.nbnco.net.au')
+                    //artifactoryServer = Artifactory.server('apro.nbnco.net.au')
                 }
 
                 sh 'env'
