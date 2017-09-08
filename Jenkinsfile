@@ -53,10 +53,10 @@ pipeline {
                         url: "https://github.com/ramagopr1/testrepo.git"
                     )
 
-                    script {
-                        env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                        env.ROOT_BUILD_CAUSE = java.net.URLEncoder.encode(currentBuild.rawBuild.getCauses()[0].getShortDescription(), "UTF-8")
-                    }
+                   // script {
+                     //   env.GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                     //   env.ROOT_BUILD_CAUSE = java.net.URLEncoder.encode(currentBuild.rawBuild.getCauses()[0].getShortDescription(), "UTF-8")
+                   // }
 
                     // Make sure everythign env-wise is set before this if its used in notifications.
                 }
@@ -68,7 +68,7 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${JOB_BASE_NAME}") {
-                    sh './packaging/rpm/build.bash'
+                    sh './sample.bash'
                 }
             }
         }
