@@ -68,7 +68,9 @@ pipeline {
         stage('Build') {
             steps {
                 dir("${JOB_BASE_NAME}") {
-                    sh './sample.bash'
+                    echo "basename"
+                    echo "${JOB_BASE_NAME}"
+                   './sample.bash'
                 }
             }
         }
