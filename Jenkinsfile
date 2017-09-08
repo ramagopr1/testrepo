@@ -7,11 +7,11 @@ pipeline {
     }
 
     agent {
-        label 'Savvi-Build-Slave'
+        label 'master'
     }
 
     triggers {
-        gitlab(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All')
+        github(triggerOnPush: true, triggerOnMergeRequest: true, branchFilterType: 'All')
     }
 
     options {
