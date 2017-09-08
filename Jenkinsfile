@@ -81,6 +81,7 @@ pipeline {
                 dir("${JOB_BASE_NAME}") {
                     echo "basename"
                     echo "${JOB_BASE_NAME}"
+                    sh "/var/jenkins_home/workspace/${JOB_BASE_NAME}/${JOB_BASE_NAME}/sample.sh"
                 }
             }
         }
