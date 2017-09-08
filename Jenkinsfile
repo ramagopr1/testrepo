@@ -3,7 +3,6 @@
 pipeline {
     parameters {
         string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'What branch to build?')
-        string(name: 'INSTANCE_TYPE', defaultValue: 't2.micro', description: 'What branch to build?')
     }
 
 
