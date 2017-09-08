@@ -13,14 +13,14 @@ pipeline {
         timeout(time: 20, unit: 'MINUTES')
     }
 
-    post {
+    /*post {
         failure {
             updateGitlabCommitStatus name: 'build', state: 'failed'
         }
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
         }
-    }
+    }*/
 
     stages {
         stage('Initialise') {
