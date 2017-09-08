@@ -2,7 +2,7 @@
 
 pipeline {
     parameters {
-        string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'What branch to build?')
+        string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'What branch to build?'),
 
          activeChoiceParam('States') {
         description('Name of the State')
