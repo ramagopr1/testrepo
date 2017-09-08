@@ -3,7 +3,7 @@
 
 pipeline {
     parameters {
-        string(name: 'GIT_BRANCH', defaultValue: 'develop', description: 'What branch to build?')
+        string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'What branch to build?')
     }
 
     agent {
@@ -24,9 +24,6 @@ pipeline {
         }
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
-        }
-        always {
-            sendSavviNotifications currentBuild.result
         }
     }
 
@@ -57,8 +54,8 @@ pipeline {
                 dir("${JOB_BASE_NAME}") {
                     git(
                         branch: GIT_BRANCH,
-                        credentialsId: 'snpm_git_user',
-                        url: "https://git.nbnco.net.au/snpm/${JOB_BASE_NAME}.git"
+                        credentialsId: 'ramagopr1',
+                        url: "https://github.com/ramagopr1/testrepo.git"
                     )
 
                     script {
@@ -67,53 +64,11 @@ pipeline {
                     }
 
                     // Make sure everythign env-wise is set before this if its used in notifications.
-                    sendSavviNotifications 'STARTED'
                 }
             }
         }
 
-        stage('Dependencies') {
-            steps {
-                script {
-                    def downloadSpec = """{
-                        "files": [
-                            {
-                                "pattern": "savvi-packages/savvi/6/release/x86_64/savvi-node6-6.10.1-0.*",
-                                "target": "dependencies/",
-                                "flat": "true"
-                            },
-                            {
-                                "pattern": "savvi-packages/savvi/6/develop/x86_64/savvi-nodejs-utils-1.0.0~2-*",
-                                "target": "dependencies/",
-                                "flat": "true"
-                            }
-                        ]
-                    }"""
-                    artifactoryServer.download(spec: downloadSpec)
-                }
 
-                // God I hate yum for returning exit code 1 when something is already installed (from file)
-                sh 'sudo rpm -qa | grep savvi-node6 || sudo yum install -y dependencies/savvi-node6-*'
-                sh 'sudo rpm -qa | grep savvi-nodejs-utils || sudo yum install -y dependencies/savvi-nodejs-utils-*'
-            }
-        }
-
-        stage('Tests') {
-            steps {
-                script {
-                    env.PATH="/opt/savvi-deps/node6/bin:${env.PATH}"
-                }
-                dir("$WORKSPACE/${JOB_BASE_NAME}") {
-                    sh 'which node'
-                    sh './tests/unit-tests/unit-tests.sh'
-                }
-            }
-            post {
-                success {
-                    junit '**/*.xml'
-                }
-            }
-        }
 
         stage('Build') {
             steps {
@@ -123,59 +78,6 @@ pipeline {
             }
         }
 
-        stage('Package') {
-            steps {
-                dir('savvi-build-tools-nbn') {
-                    git(
-                        branch: 'develop',
-                        credentialsId: 'snpm_git_user',
-                        url: 'https://git.nbnco.net.au/snpm/savvi-build-tools-nbn.git'
-                    )
-                }
 
-                sh './savvi-build-tools-nbn/scripts/rpmbuilder.sh'
-            }
-        }
 
-        stage('Publish') {
-            steps {
-                script {
-                    def uploadSpec = readFile 'uploadfile.spec'
-                    buildInfo = artifactoryServer.upload(spec: uploadSpec)
-                    artifactoryServer.publishBuildInfo(buildInfo)
-
-                    // Could be useful...
-                    buildInfoJson = getArtifactoryBuildInfo(buildInfo)
-
-                    // This artifact had unit tests during build, so mark the build artifacts as passed
-                    def artifacts = getArtifactoryBuildArtifacts(buildInfo)
-                    artifacts.results.each {
-                        updateArtifactoryProperty {
-                            url = it.apiStorageUri
-                            credentialsId = 'apro_savvi_user'
-                            key = 'unit'
-                            value = 'true'
-                        }
-                    }
-
-                    // Put a string list of artifacts produced into an env variable so our scripts can see
-                    env.artifacts = buildInfo.deployedArtifacts.collect{ it.getName() }.join(' ')
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                build(
-                    wait: false,
-                    job: 'savvi-fake-product-deploy',
-                    parameters: [
-                        [$class: 'StringParameterValue', name: 'UT_JOB_NAME', value: JOB_NAME],
-                        [$class: 'StringParameterValue', name: 'UT_BUILD_NUMBER', value: BUILD_NUMBER],
-                        [$class: 'StringParameterValue', name: 'DEPLOY_VERSION', value: 'jenkins-latest']
-                    ]
-                )
-            }
-        }
-    }
 }
