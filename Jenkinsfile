@@ -81,9 +81,6 @@ pipeline {
                 dir("${JOB_BASE_NAME}") {
                     echo "basename"
                     echo "${JOB_BASE_NAME}"
-                    echo "/var/jenkins_home/workspace/${JOB_BASE_NAME}/${JOB_BASE_NAME}"
-                    chmod 777 "/var/jenkins_home/workspace/'${JOB_BASE_NAME}'/'${JOB_BASE_NAME}'/sample.sh"
-                    sh "/var/jenkins_home/workspace/'${JOB_BASE_NAME}'/'${JOB_BASE_NAME}'/sample.sh"
                 }
             }
         }
