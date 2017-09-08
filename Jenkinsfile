@@ -70,7 +70,6 @@ pipeline {
                 dir("${JOB_BASE_NAME}") {
                     echo "basename"
                     echo "${JOB_BASE_NAME}"
-                   './sample.bash'
                 }
             }
         }
